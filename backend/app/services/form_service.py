@@ -53,8 +53,10 @@ async def list_forms(db: AsyncSession, status: FormStatus | None, search: str | 
     total = await db.scalar(select(func.count()).select_from(query.subquery())) or 0
     columns = {"created_at": Form.created_at, "updated_at": Form.updated_at, "title": Form.title}
     if sort == "response_count":
-        query = query.order_by((select(func.count(FormResponse.id)).where(FormResponse.form_id == Form.id).scalar_subquery()).desc() if order == "desc" else (select(func.count(FormResponse.id)).where(FormResponse.form_id == Form.id).scalar_subquery()).asc())
-    else: query = query.order_by(columns[sort].desc() if order == "desc" else columns[sort].asc())
+        primary_order = select(func.count(FormResponse.id)).where(FormResponse.form_id == Form.id).scalar_subquery()
+    else:
+        primary_order = columns[sort]
+    query = query.order_by(primary_order.desc(), Form.id.desc()) if order == "desc" else query.order_by(primary_order.asc(), Form.id.asc())
     result = await db.execute(query.offset((page - 1) * limit).limit(limit))
     return {"items": [form_data(item) for item in result.scalars().unique()], "pagination": {"page": page, "limit": limit, "total": total, "total_pages": ceil(total / limit) if total else 0}}
 
