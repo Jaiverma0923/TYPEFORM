@@ -142,6 +142,14 @@ Only settings applicable to the selected type are retained.
 {"id":10,"type":"short_text","title":"What is your name?","description":null,"required":true,"position":0,"settings":{"placeholder":"Type your name"},"version":1}
 ```
 
+## Form Theme
+
+```json
+{"id":1,"form_id":1,"name":"Default","colors":{"primary":"#262626","background":"#ffffff","surface":"#ffffff","text":"#1c1917","border":"#e7e5e4","accent":"#f59e0b"},"typography":{"font_family":"Inter","heading_weight":700,"body_weight":400},"background":{"type":"solid","value":"#ffffff"},"buttons":{"radius":8,"style":"filled"},"inputs":{"radius":8},"created_at":"2026-07-11T10:00:00Z","updated_at":"2026-07-11T10:00:00Z"}
+```
+
+Colors must use `#RRGGBB`; supported fonts are `Inter`, `Poppins`, `DM Sans`, `Manrope`, and `System`. Button and input radii are integers from 0 through 24, and button styles are `filled` or `outline`.
+
 ## Response Submission
 
 ```json
@@ -414,6 +422,29 @@ All endpoints return the standard error wrapper for failures. `422` uses the val
 ```
 
 **Error Responses:** Standard error, validation, and conflict wrappers.
+
+## Themes
+
+### Get Form Theme
+
+**Method:** GET  
+**Path:** `/api/v1/forms/{form_id}/theme`  
+**Request Body:** None.  
+**Success Response:** `Theme fetched successfully` with Form Theme data.
+
+### Update Form Theme
+
+**Method:** PATCH  
+**Path:** `/api/v1/forms/{form_id}/theme`  
+**Request Body:** Any partial subset of `name`, `colors`, `typography`, `background`, `buttons`, and `inputs`.  
+**Success Response:** `Theme updated successfully` with the updated Form Theme data. Invalid colors, font families, radii, and button styles return the standard `422` validation wrapper.
+
+### Reset Form Theme
+
+**Method:** POST  
+**Path:** `/api/v1/forms/{form_id}/theme/reset`  
+**Request Body:** None.  
+**Success Response:** `Theme reset successfully` with the default Form Theme data.
 
 ## Responses and Analytics
 

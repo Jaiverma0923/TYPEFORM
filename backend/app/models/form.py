@@ -31,3 +31,4 @@ class Form(Base):
     creator: Mapped["Creator"] = relationship(back_populates="forms")
     questions: Mapped[list["Question"]] = relationship(back_populates="form", cascade="all, delete-orphan", order_by="Question.position")
     responses: Mapped[list["FormResponse"]] = relationship(back_populates="form", cascade="all, delete-orphan")
+    theme: Mapped["FormTheme | None"] = relationship(back_populates="form", cascade="all, delete-orphan", uselist=False)

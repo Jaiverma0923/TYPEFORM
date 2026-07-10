@@ -8,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.exceptions import BusinessValidationError, NotFoundError
-from app.models import Creator, Form, FormResponse, FormStatus, Question, QuestionType
+from app.models import Creator, Form, FormResponse, FormStatus, FormTheme, Question, QuestionType
 from app.schemas.form import FormCreate, FormDuplicate, FormUpdate
+from app.services.theme_service import DEFAULT_THEME, theme_data
 
 DEFAULT_CREATOR_ID = 1
 
@@ -31,7 +32,7 @@ async def _default_creator(db: AsyncSession) -> Creator:
 
 
 async def _form(db: AsyncSession, form_id: int) -> Form:
-    result = await db.execute(select(Form).options(selectinload(Form.questions), selectinload(Form.responses)).where(Form.id == form_id, Form.creator_id == DEFAULT_CREATOR_ID))
+    result = await db.execute(select(Form).options(selectinload(Form.questions), selectinload(Form.responses), selectinload(Form.theme)).where(Form.id == form_id, Form.creator_id == DEFAULT_CREATOR_ID))
     form = result.scalar_one_or_none()
     if form is None:
         raise NotFoundError("Form not found")
@@ -41,7 +42,7 @@ async def _form(db: AsyncSession, form_id: int) -> Form:
 def form_data(form: Form, detail: bool = False) -> dict:
     data = {"id": form.id, "title": form.title, "description": form.description, "slug": form.slug, "status": form.status, "version": form.version, "question_count": len(form.questions), "response_count": len(form.responses), "created_at": form.created_at, "updated_at": form.updated_at, "published_at": form.published_at}
     if detail:
-        data.update({"thank_you_title": form.thank_you_title, "thank_you_message": form.thank_you_message, "questions": [{"id": q.id, "form_id": q.form_id, "type": q.type, "title": q.title, "description": q.description, "required": q.required, "position": q.position, "settings": q.settings_json, "version": q.version, "created_at": q.created_at, "updated_at": q.updated_at} for q in sorted(form.questions, key=lambda item: item.position)]})
+        data.update({"thank_you_title": form.thank_you_title, "thank_you_message": form.thank_you_message, "questions": [{"id": q.id, "form_id": q.form_id, "type": q.type, "title": q.title, "description": q.description, "required": q.required, "position": q.position, "settings": q.settings_json, "version": q.version, "created_at": q.created_at, "updated_at": q.updated_at} for q in sorted(form.questions, key=lambda item: item.position)], "theme": theme_data(form.theme)})
     return data
 
 
@@ -64,6 +65,7 @@ async def list_forms(db: AsyncSession, status: FormStatus | None, search: str | 
 async def create_form(db: AsyncSession, payload: FormCreate) -> Form:
     await _default_creator(db)
     form = Form(creator_id=DEFAULT_CREATOR_ID, title=_trim(payload.title, "title"), description=payload.description, thank_you_title=_trim(payload.thank_you_title, "thank_you_title"), thank_you_message=payload.thank_you_message.strip())
+    form.theme = FormTheme(**DEFAULT_THEME)
     db.add(form); await db.commit()
     return await _form(db, form.id)
 
@@ -86,6 +88,7 @@ async def duplicate_form(db: AsyncSession, form_id: int, payload: FormDuplicate)
     duplicate = Form(creator_id=DEFAULT_CREATOR_ID, title=title, description=source.description, thank_you_title=source.thank_you_title, thank_you_message=source.thank_you_message)
     for question in source.questions:
         duplicate.questions.append(Question(type=question.type, title=question.title, description=question.description, required=question.required, position=question.position, settings_json=question.settings_json.copy(), version=question.version))
+    duplicate.theme = FormTheme(**DEFAULT_THEME)
     db.add(duplicate); await db.commit(); return await _form(db, duplicate.id)
 
 

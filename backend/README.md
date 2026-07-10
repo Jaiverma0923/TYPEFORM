@@ -27,7 +27,7 @@ Swagger: `http://localhost:8000/docs`; API prefix: `/api/v1`; contract: [docs/ap
 
 ## Database and API
 
-Tables: creators, forms, questions, form_responses, answers. Alembic migration: `alembic upgrade head`. The seed command creates default creator `1`, Customer Feedback (published, slug `customer-feedback-demo`) and Event Registration (draft), all question types, and analytics-ready responses.
+Tables: creators, forms, form_themes, questions, form_responses, answers. Alembic migration: `alembic upgrade head`. The seed command creates default creator `1`, Customer Feedback (published, slug `customer-feedback-demo`) and Event Registration (draft), all question types, and analytics-ready responses.
 
 The backend assumes one creator and has no authentication. SQLite is appropriate for local development; use a production database and managed migrations for deployment. No frontend field transforms are required: JSON is snake_case and exposes `settings`, never `settings_json`.
 
