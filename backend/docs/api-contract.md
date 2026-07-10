@@ -477,6 +477,24 @@ A logic rule has `id`, `form_id`, `source_question_id`, `operator`, `value`, `ac
 **Request Body:** `{ "rule_ids": [3, 1, 2] }` containing every rule for the form exactly once.  
 **Success Response:** `{ "rule_ids": [3, 1, 2], "form_id": 1 }`.
 
+## Draft Responses
+
+A draft response has `id`, `form_id`, `slug`, `form_version`, `answers`, `current_question_id`, `visited_question_ids`, `started_at`, `last_saved_at`, and `completed`.
+
+### Get and Create Draft
+
+**Methods:** GET, POST  
+**Path:** `/api/v1/public/{slug}/draft`  
+**Request Body:** None.  
+**Success Responses:** GET returns the saved Draft Response or `data: null` if none exists. POST creates the form draft if absent, otherwise returns its existing draft.
+
+### Update and Delete Draft
+
+**Methods:** PATCH, DELETE  
+**Path:** `/api/v1/drafts/{draft_id}`  
+**Request Body:** PATCH accepts the frontend draft fields: `form_version`, `answers`, `current_question_id`, `visited_question_ids`, `started_at`, and optional `completed`. DELETE has no body.  
+**Success Responses:** Updated Draft Response data; or `{id}` for deletion.
+
 ## Responses and Analytics
 
 ### List Form Responses

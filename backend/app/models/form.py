@@ -33,3 +33,4 @@ class Form(Base):
     responses: Mapped[list["FormResponse"]] = relationship(back_populates="form", cascade="all, delete-orphan")
     theme: Mapped["FormTheme | None"] = relationship(back_populates="form", cascade="all, delete-orphan", uselist=False)
     logic_rules: Mapped[list["LogicRule"]] = relationship(back_populates="form", cascade="all, delete-orphan", order_by="LogicRule.priority")
+    draft_response: Mapped["DraftResponse | None"] = relationship(back_populates="form", cascade="all, delete-orphan", uselist=False)

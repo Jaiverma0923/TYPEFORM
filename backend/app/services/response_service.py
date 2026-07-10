@@ -4,13 +4,13 @@ import io
 from datetime import datetime, timezone
 from math import ceil
 
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.exceptions import BusinessValidationError, ConflictError, NotFoundError
 from app.core.timestamps import format_utc_timestamp
-from app.models import Answer, Form, FormResponse, FormStatus, Question, QuestionType
+from app.models import Answer, DraftResponse, Form, FormResponse, FormStatus, Question, QuestionType
 from app.schemas.response import ResponseSubmission
 from app.services.logic_rule_service import logic_rule_data
 from app.services.theme_service import ensure_theme, theme_data
@@ -80,6 +80,7 @@ async def submit_response(db: AsyncSession, slug: str, payload: ResponseSubmissi
     db.add(response); await db.flush()
     for answer in payload.answers:
         if answer.value is not None: db.add(Answer(response_id=response.id, question_id=answer.question_id, value_json=answer.value))
+    await db.execute(delete(DraftResponse).where(DraftResponse.form_id == form.id))
     await db.commit(); await db.refresh(response)
     return {"response_id": response.id, "submitted_at": response.submitted_at, "thank_you": {"title": form.thank_you_title, "message": form.thank_you_message}}
 
