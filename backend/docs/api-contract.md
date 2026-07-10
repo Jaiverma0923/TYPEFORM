@@ -446,6 +446,37 @@ All endpoints return the standard error wrapper for failures. `422` uses the val
 **Request Body:** None.  
 **Success Response:** `Theme reset successfully` with the default Form Theme data.
 
+## Logic Rules
+
+A logic rule has `id`, `form_id`, `source_question_id`, `operator`, `value`, `action`, `target_question_id`, `priority`, `created_at`, and `updated_at`. Rules are ordered by ascending `priority`. The API stores and validates rules; the frontend evaluates them.
+
+### List Logic Rules
+
+**Method:** GET  
+**Path:** `/api/v1/forms/{form_id}/logic-rules`  
+**Success Response:** `Logic rules fetched successfully` with an ordered logic-rule array.
+
+### Create Logic Rule
+
+**Method:** POST  
+**Path:** `/api/v1/forms/{form_id}/logic-rules`  
+**Request Body:** `{source_question_id, operator, value, action, target_question_id}`  
+**Success Response:** `Logic rule created successfully` with Logic Rule data.
+
+### Update and Delete Logic Rule
+
+**Methods:** PATCH, DELETE  
+**Paths:** `/api/v1/logic-rules/{rule_id}`  
+**Request Body:** PATCH accepts any partial subset of the create fields. DELETE has no body.  
+**Success Responses:** Updated Logic Rule data; or `{id}` for deletion.
+
+### Reorder Logic Rules
+
+**Method:** PATCH  
+**Path:** `/api/v1/forms/{form_id}/logic-rules/reorder`  
+**Request Body:** `{ "rule_ids": [3, 1, 2] }` containing every rule for the form exactly once.  
+**Success Response:** `{ "rule_ids": [3, 1, 2], "form_id": 1 }`.
+
 ## Responses and Analytics
 
 ### List Form Responses

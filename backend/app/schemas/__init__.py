@@ -4,5 +4,6 @@ from app.schemas.form import Creator, CreatorResponse, FormCreate, FormDetail, F
 from app.schemas.question import QuestionCreate, QuestionReorder, QuestionResponse, QuestionSettings, QuestionUpdate
 from app.schemas.response import AnswerSubmission, FormResponseSummary, IndividualFormResponse, ResponseSubmission
 from app.schemas.theme import FormThemeUpdate
+from app.schemas.logic_rule import LogicRuleCreate, LogicRuleReorder, LogicRuleUpdate
 
-__all__ = ["Analytics", "AnswerSubmission", "Creator", "CreatorResponse", "ErrorResponse", "FormCreate", "FormDetail", "FormDuplicate", "FormResponseSummary", "FormSummary", "FormThemeUpdate", "FormUpdate", "IndividualFormResponse", "Pagination", "PublicForm", "QuestionCreate", "QuestionReorder", "QuestionResponse", "QuestionSettings", "QuestionUpdate", "ResponseSubmission", "SuccessResponse"]
+__all__ = ["Analytics", "AnswerSubmission", "Creator", "CreatorResponse", "ErrorResponse", "FormCreate", "FormDetail", "FormDuplicate", "FormResponseSummary", "FormSummary", "FormThemeUpdate", "FormUpdate", "IndividualFormResponse", "LogicRuleCreate", "LogicRuleReorder", "LogicRuleUpdate", "Pagination", "PublicForm", "QuestionCreate", "QuestionReorder", "QuestionResponse", "QuestionSettings", "QuestionUpdate", "ResponseSubmission", "SuccessResponse"]

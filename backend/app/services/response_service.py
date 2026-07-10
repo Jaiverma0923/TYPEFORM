@@ -12,6 +12,7 @@ from app.core.exceptions import BusinessValidationError, ConflictError, NotFound
 from app.core.timestamps import format_utc_timestamp
 from app.models import Answer, Form, FormResponse, FormStatus, Question, QuestionType
 from app.schemas.response import ResponseSubmission
+from app.services.logic_rule_service import logic_rule_data
 from app.services.theme_service import ensure_theme, theme_data
 
 
@@ -20,14 +21,14 @@ def _validation(field: str, message: str) -> BusinessValidationError:
 
 
 async def _published_form(db: AsyncSession, slug: str) -> Form:
-    result = await db.execute(select(Form).options(selectinload(Form.questions), selectinload(Form.theme)).where(Form.slug == slug, Form.status == FormStatus.PUBLISHED))
+    result = await db.execute(select(Form).options(selectinload(Form.questions), selectinload(Form.theme), selectinload(Form.logic_rules)).where(Form.slug == slug, Form.status == FormStatus.PUBLISHED))
     form = result.scalar_one_or_none()
     if form is None: raise NotFoundError("Public form not found")
     return form
 
 
 def public_form_data(form: Form) -> dict:
-    return {"id": form.id, "title": form.title, "description": form.description, "slug": form.slug, "version": form.version, "thank_you_title": form.thank_you_title, "thank_you_message": form.thank_you_message, "questions": [{"id": q.id, "type": q.type, "title": q.title, "description": q.description, "required": q.required, "position": q.position, "settings": q.settings_json, "version": q.version} for q in sorted(form.questions, key=lambda item: item.position)], "theme": theme_data(form.theme)}
+    return {"id": form.id, "title": form.title, "description": form.description, "slug": form.slug, "version": form.version, "thank_you_title": form.thank_you_title, "thank_you_message": form.thank_you_message, "questions": [{"id": q.id, "type": q.type, "title": q.title, "description": q.description, "required": q.required, "position": q.position, "settings": q.settings_json, "version": q.version} for q in sorted(form.questions, key=lambda item: item.position)], "logic_rules": [logic_rule_data(rule) for rule in sorted(form.logic_rules, key=lambda item: (item.priority, item.id))], "theme": theme_data(form.theme)}
 
 
 def _missing(value: object) -> bool:
