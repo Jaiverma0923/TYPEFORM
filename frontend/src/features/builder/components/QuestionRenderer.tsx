@@ -14,7 +14,6 @@ import type { FormTheme } from "@/types/theme";
 
 type QuestionRendererProps = {
   question: Question;
-  questionNumber: number;
   value?: ResponseAnswer["value"];
   error?: string | null;
   autoFocus?: boolean;
@@ -22,7 +21,21 @@ type QuestionRendererProps = {
   onAnswerChange?: (value: ResponseAnswer["value"]) => void;
 };
 
-function QuestionHeader({ question, questionNumber, theme }: QuestionRendererProps) {
+type QuestionHeaderProps = {
+  question: Question;
+  questionNumber: number;
+  theme?: FormTheme;
+};
+
+type QuestionRendererComponentProps = QuestionRendererProps & {
+  questionNumber: number;
+};
+
+function QuestionHeader({
+  question,
+  questionNumber,
+  theme,
+}: QuestionHeaderProps) {
   const appearance = useAppearanceStore((state) => state.appearance);
   const effectiveTheme = theme ? getEffectiveTheme(theme, appearance) : null;
 
@@ -222,14 +235,14 @@ function RatingPreview({ onAnswerChange, question, theme, value }: QuestionRende
 */
 
 export function QuestionRenderer({
-  autoFocus,
-  error,
-  onAnswerChange,
   question,
   questionNumber,
-  theme,
   value,
-}: QuestionRendererProps) {
+  error,
+  autoFocus,
+  onAnswerChange,
+  theme,
+}: QuestionRendererComponentProps) {
   const appearance = useAppearanceStore((state) => state.appearance);
 
   return (
