@@ -4,7 +4,7 @@ A full-stack Typeform-style form builder with a conversational one-question-at-a
 
 The project is built as a production-style frontend/backend system with a contract-first API, modular architecture, reusable rendering logic, and separate creator/respondent workflows.
 
-> **Status:** Core functionality complete. Deployment and final production integration may vary by environment.
+> **Status:** Core functionality is complete. The application is deployed and includes the full creator workflow, respondent flow, analytics, conditional logic, and theming.
 
 ---
 
@@ -142,7 +142,6 @@ typeform-clone/
 - FastAPI
 - SQLAlchemy
 - Pydantic
-- Alembic
 - SQLite
 - Uvicorn
 
@@ -410,11 +409,7 @@ LOG_LEVEL=INFO
 API_V1_PREFIX=/api/v1
 ```
 
-Run migrations if Alembic is configured:
 
-```bash
-alembic upgrade head
-```
 
 Start the backend:
 
@@ -517,7 +512,7 @@ Recommended:
 Set:
 
 ```env
-NEXT_PUBLIC_API_URL=https://your-backend.onrender.com/api/v1
+NEXT_PUBLIC_API_URL=https://typeform-az8x.onrender.com/api/v1
 NEXT_PUBLIC_USE_MOCK_API=false
 ```
 
@@ -536,7 +531,7 @@ python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
 Set the frontend origin:
 
 ```env
-FRONTEND_URL=https://your-frontend.vercel.app
+FRONTEND_URL=https://typeform-26.vercel.app
 ```
 
 ### SQLite on Render

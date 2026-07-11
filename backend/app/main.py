@@ -3,8 +3,9 @@ import json
 import app.models
 from contextlib import asynccontextmanager
 
-from app.db.database import engine
+from app.db.database import AsyncSessionLocal, engine
 from app.db.base import Base
+from app.db.seed import seed_database
 from fastapi import FastAPI
 from fastapi.encoders import ENCODERS_BY_TYPE
 from fastapi.exceptions import RequestValidationError
@@ -27,6 +28,8 @@ ENCODERS_BY_TYPE[datetime] = format_utc_timestamp
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    async with AsyncSessionLocal() as session:
+        await seed_database(session)
     yield
 app = FastAPI(
     title=settings.app_name,
