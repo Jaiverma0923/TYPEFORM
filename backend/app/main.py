@@ -23,6 +23,11 @@ from app.core.timestamps import format_utc_timestamp, normalize_timestamp_payloa
 settings = get_settings()
 ENCODERS_BY_TYPE[datetime] = format_utc_timestamp
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
 app = FastAPI(
     title=settings.app_name,
     version="1.0.0",
@@ -37,11 +42,7 @@ app.add_middleware(
 )
 app.include_router(api_router, prefix=settings.api_v1_prefix)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
+
 
 @app.middleware("http")
 async def normalize_json_timestamps(request: Request, call_next) -> Response:
