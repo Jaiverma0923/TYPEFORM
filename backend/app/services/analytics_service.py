@@ -7,7 +7,7 @@ from app.models import Form, FormResponse, QuestionType
 
 
 async def form_analytics(db: AsyncSession, form_id: int) -> dict:
-    result = await db.execute(select(Form).options(selectinload(Form.questions), selectinload(Form.responses).selectinload(FormResponse.answers)).where(Form.id == form_id, Form.creator_id == 1))
+    result = await db.execute(select(Form).options(selectinload(Form.questions), selectinload(Form.responses).selectinload(FormResponse.answers), selectinload(Form.draft_response)).where(Form.id == form_id, Form.creator_id == 1))
     form = result.scalar_one_or_none()
     if form is None: raise NotFoundError("Form not found")
     responses = form.responses; total = len(responses)
@@ -24,4 +24,5 @@ async def form_analytics(db: AsyncSession, form_id: int) -> dict:
         elif question.type == QuestionType.YES_NO:
             summary = {"yes": values.count(True), "no": values.count(False)}
         questions.append({"question_id": question.id, "title": question.title, "type": question.type, "answered_count": answered, "skipped_count": total - answered, "summary": summary})
-    return {"form_id": form.id, "form_title": form.title, "total_responses": total, "average_completion_time_seconds": round(sum(times) / len(times), 2) if times else None, "questions": questions}
+    active_draft_count = 1 if form.draft_response is not None and not form.draft_response.completed else 0
+    return {"form_id": form.id, "form_title": form.title, "total_responses": total, "started_responses": total + active_draft_count, "completed_responses": total, "average_completion_time_seconds": round(sum(times) / len(times), 2) if times else None, "questions": questions}

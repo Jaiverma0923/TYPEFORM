@@ -19,5 +19,7 @@ class QuestionAnalytics(ORMModel):
 class Analytics(ORMModel):
     form_id: int
     total_responses: int
+    started_responses: int
+    completed_responses: int
     average_completion_time_seconds: int | float | None
     questions: list[QuestionAnalytics]

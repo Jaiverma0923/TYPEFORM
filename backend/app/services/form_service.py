@@ -11,7 +11,7 @@ from app.core.exceptions import BusinessValidationError, NotFoundError
 from app.models import Creator, Form, FormResponse, FormStatus, FormTheme, Question, QuestionType
 from app.schemas.form import FormCreate, FormDuplicate, FormUpdate
 from app.services.logic_rule_service import logic_rule_data
-from app.services.theme_service import DEFAULT_THEME, theme_data
+from app.services.theme_service import DEFAULT_THEME, ensure_theme, theme_data
 
 DEFAULT_CREATOR_ID = 1
 
@@ -37,6 +37,7 @@ async def _form(db: AsyncSession, form_id: int) -> Form:
     form = result.scalar_one_or_none()
     if form is None:
         raise NotFoundError("Form not found")
+    await ensure_theme(db, form)
     return form
 
 

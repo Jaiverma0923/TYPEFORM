@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from app.db.base import Base
 from app.db.database import get_db
 from app.main import app
-from app.models import Answer, Creator, Form, FormResponse, Question, QuestionType
+from app.models import Answer, Creator, DraftResponse, Form, FormResponse, Question, QuestionType
 
 
 def test_response_reporting_and_analytics(tmp_path) -> None:
@@ -24,7 +24,7 @@ def test_response_reporting_and_analytics(tmp_path) -> None:
         detail = client.get("/api/v1/responses/1"); assert detail.status_code == 200 and [a["question_id"] for a in detail.json()["data"]["answers"]] == [1, 2, 3]
         assert client.get("/api/v1/responses/999").status_code == 404
         analytics = client.get("/api/v1/forms/1/analytics").json()["data"]
-        assert analytics["total_responses"] == 2 and analytics["average_completion_time_seconds"] == 15
+        assert analytics["total_responses"] == 2 and analytics["started_responses"] == 3 and analytics["completed_responses"] == 2 and analytics["average_completion_time_seconds"] == 15
         choice, rating, yes_no = analytics["questions"]
         assert choice["summary"]["counts"] == [{"label": "A", "count": 1, "percentage": 100.0}, {"label": "B", "count": 0, "percentage": 0.0}]
         assert rating["summary"]["distribution"] == [{"value": 1, "count": 0}, {"value": 2, "count": 0}, {"value": 3, "count": 1}, {"value": 4, "count": 0}, {"value": 5, "count": 0}]
@@ -42,4 +42,4 @@ async def _seed(engine) -> None:
         questions = [Question(id=1, form=form, type=QuestionType.MULTIPLE_CHOICE, title="Choice", position=0, settings_json={"options": ["A", "B"]}), Question(id=2, form=form, type=QuestionType.RATING, title="Rating", position=1, settings_json={"min": 1, "max": 5}), Question(id=3, form=form, type=QuestionType.YES_NO, title="Yes", position=2, settings_json={})]
         first = FormResponse(id=1, form=form, form_version=1, completion_time_seconds=10, submitted_at=datetime(2026, 7, 10, 15, 1, tzinfo=timezone.utc)); second = FormResponse(id=2, form=form, form_version=1, completion_time_seconds=20, submitted_at=datetime(2026, 7, 10, 15, 0, tzinfo=timezone.utc))
         first.answers.extend([Answer(question=questions[0], value_json="A"), Answer(question=questions[1], value_json=3), Answer(question=questions[2], value_json=True)])
-        session.add_all([form, *questions, first, second]); await session.commit()
+        session.add_all([form, *questions, first, second, DraftResponse(form_id=1, answers_json=[], current_question_id=1, visited_question_ids=[1], form_version=1)]); await session.commit()

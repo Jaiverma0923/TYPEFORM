@@ -21,6 +21,13 @@ def test_form_theme_routes_and_payloads(tmp_path) -> None:
     app.dependency_overrides[get_db] = override_db
     client = TestClient(app)
     try:
+        private_legacy = client.get("/api/v1/forms/1")
+        assert private_legacy.status_code == 200
+        assert private_legacy.json()["data"]["theme"]["colors"]["primary"] == "#262626"
+        public_legacy = client.get("/api/v1/public/forms/legacy-public")
+        assert public_legacy.status_code == 200
+        assert public_legacy.json()["data"]["theme"]["colors"]["primary"] == "#262626"
+
         initial = client.get("/api/v1/forms/1/theme")
         assert initial.status_code == 200
         default = initial.json()["data"]
@@ -59,5 +66,8 @@ async def _seed(engine) -> None:
     sessions = async_sessionmaker(engine, expire_on_commit=False)
     async with sessions() as session:
         session.add(Creator(id=1, name="Creator", email="creator@test.dev"))
-        session.add(Form(id=1, creator_id=1, title="Live", slug="live", status=FormStatus.PUBLISHED))
+        session.add_all([
+            Form(id=1, creator_id=1, title="Live", slug="live", status=FormStatus.PUBLISHED),
+            Form(id=2, creator_id=1, title="Legacy Public", slug="legacy-public", status=FormStatus.PUBLISHED),
+        ])
         await session.commit()

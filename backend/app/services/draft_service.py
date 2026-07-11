@@ -66,7 +66,7 @@ async def _draft(db: AsyncSession, draft_id: int) -> DraftResponse:
 
 async def update_draft(db: AsyncSession, draft_id: int, payload: DraftUpdate) -> dict:
     draft = await _draft(db, draft_id)
-    changes = payload.model_dump(exclude_unset=True)
+    changes = {field: value for field, value in payload.model_dump(exclude_unset=True).items() if value is not None}
     if "form_version" in changes and changes["form_version"] != draft.form.version:
         raise ConflictError("This form changed. Reload the form and try again.")
     answers = changes.get("answers")

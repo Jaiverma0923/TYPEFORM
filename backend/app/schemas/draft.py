@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import Field
 
@@ -12,9 +12,9 @@ class DraftAnswer(ORMModel):
 
 
 class DraftUpdate(ORMModel):
-    form_version: int = Field(default=None, ge=1)
-    answers: list[DraftAnswer] = None
-    current_question_id: int = Field(default=None, gt=0)
-    visited_question_ids: list[int] = None
-    started_at: datetime = None
-    completed: bool = None
+    form_version: Optional[int] = Field(default=None, ge=1)
+    answers: Optional[list[DraftAnswer]] = None
+    current_question_id: Optional[int] = Field(default=None, gt=0)
+    visited_question_ids: Optional[list[int]] = None
+    started_at: Optional[datetime] = None
+    completed: Optional[bool] = None
