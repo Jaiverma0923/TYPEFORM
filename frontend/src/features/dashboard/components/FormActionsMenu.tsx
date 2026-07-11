@@ -71,7 +71,7 @@ export function FormActionsMenu({
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [setMenuOpen]);
 
   function runAction(action: () => void) {
     action();

@@ -339,7 +339,7 @@ export function useBuilderController(formId: number) {
     } finally {
       setPendingAction(null);
     }
-  }, [handleUpdateForm, store.form]);
+  }, [handleUpdateForm, store.form, loadForm]);
 
   const copyPublicLink = useCallback(async () => {
     if (!store.form) {
