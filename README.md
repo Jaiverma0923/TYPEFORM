@@ -635,17 +635,14 @@ The backend remains the source of truth for all submitted data.
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
-Add project screenshots here after deployment:
+| Dashboard | Builder |
+|------------|----------|
+| ![](docs/screenshots/dashboard.png) | ![](docs/screenshots/builder.png) |
 
-```md
-![Dashboard](docs/screenshots/dashboard.png)
-![Builder](docs/screenshots/builder.png)
-![Respondent Flow](docs/screenshots/respondent.png)
-![Analytics](docs/screenshots/analytics.png)
-```
-
----
+| Respondent Flow | Analytics |
+|-----------------|-----------|
+| ![](docs/screenshots/respondent.png) | ![](docs/screenshots/analytics.png) |
 
 
