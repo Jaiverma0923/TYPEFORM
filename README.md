@@ -151,6 +151,8 @@ typeform-clone/
 
 ## Architecture
 
+The frontend communicates with the backend exclusively through a service layer. This abstraction allows the application to switch between mock data and the real FastAPI backend without changing UI components.
+
 The project follows an API-first design:
 
 ```text
@@ -282,6 +284,8 @@ POST  /api/v1/forms/{form_id}/theme/reset
 
 Some bonus-feature endpoints may depend on the final backend implementation.
 
+All API responses use JSON and follow RESTful resource conventions. Validation errors return HTTP 422 with detailed field-level messages, while unexpected server failures return standardized error responses.
+
 ---
 
 ## Getting Started
@@ -409,7 +413,7 @@ LOG_LEVEL=INFO
 API_V1_PREFIX=/api/v1
 ```
 
-
+> **Note:** On first startup, the application automatically creates the SQLite database schema if it does not already exist. No manual migration step is required.
 
 Start the backend:
 
@@ -426,7 +430,24 @@ Swagger: http://localhost:8000/docs
 
 ---
 
-## Database Model Overview
+## Sample Data
+
+On first startup, the backend automatically seeds an empty database with example data so the application is immediately usable without manual setup:
+
+- 1 demo creator
+- 2 forms (one published, one in draft)
+- 8 questions on the published form, covering the full range of supported question types
+- 1 default theme applied to the published form
+- 1 conditional logic rule
+- 5 responses with 39 answers in total
+
+Seeding is idempotent: it runs once against an empty database and is automatically skipped on subsequent startups if data already exists, so restarting the app never creates duplicate records. This is covered by `tests/test_seed.py`, which verifies both the seeded counts and that a second run does not duplicate data.
+
+This means the dashboard, builder, response list, response detail view, and analytics dashboard all have real example data to explore immediately after setup, both locally and on the deployed demo.
+
+---
+
+## Database Schema
 
 Core entities:
 
@@ -536,21 +557,24 @@ FRONTEND_URL=https://typeform-26.vercel.app
 
 ### SQLite on Render
 
-Render's default filesystem is ephemeral.
+This project uses SQLite for simplicity and local development.
 
-For reliable SQLite persistence:
+When deploying to Render, SQLite should be stored on a Render Persistent Disk to prevent data loss between deployments.
 
-- Attach a Render persistent disk
-- Mount it at a path such as `/var/data`
-- Use:
+Example:
 
 ```env
 DATABASE_URL=sqlite+aiosqlite:////var/data/typeform.db
 ```
 
-Without persistent storage, data may be lost after redeployments, restarts, or instance replacement.
+For larger production deployments, PostgreSQL is the recommended database.
 
-For a production-style deployment, PostgreSQL is recommended.
+## Production Notes
+
+- SQLite is used for local development and demonstration.
+- A Render Persistent Disk is recommended when deploying with SQLite.
+- PostgreSQL is recommended for production-scale deployments.
+- Static assets should be served through a CDN or object storage in production.
 
 ---
 
@@ -615,18 +639,17 @@ The backend remains the source of truth for all submitted data.
 
 ## Future Improvements
 
-- Real creator authentication
+- PostgreSQL support
+- User authentication & authorization
 - Team collaboration
-- Webhook integrations
-- Payment question type
-- Cloud object storage
-- PostgreSQL production database
-- Audit logs
-- Rate limiting
+- Cloud file storage (Amazon S3 / Cloudinary)
+- Webhooks & integrations
 - Background jobs
+- Rate limiting
+- Audit logs
 - End-to-end Playwright tests
-- CI/CD checks
-- Observability and structured production logging
+- CI/CD pipeline
+- Observability & structured logging
 
 ---
 
