@@ -635,14 +635,20 @@ The backend remains the source of truth for all submitted data.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
-| Dashboard | Builder |
-|------------|----------|
-| ![](docs/screenshots/dashboard.png) | ![](docs/screenshots/builder.png) |
+### Dashboard
 
-| Respondent Flow | Analytics |
-|-----------------|-----------|
-| ![](docs/screenshots/respondent.png) | ![](docs/screenshots/analytics.png) |
+![Dashboard](docs/screenshots/dashboard.png)
 
+### Builder
 
+![Builder](docs/screenshots/builder.png)
+
+### Respondent Flow
+
+![Respondent Flow](docs/screenshots/respondent.png)
+
+### Analytics
+
+![Analytics](docs/screenshots/analytics.png)
